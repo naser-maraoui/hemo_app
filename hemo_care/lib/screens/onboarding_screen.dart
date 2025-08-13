@@ -24,7 +24,7 @@ class OnboardingScreen extends StatelessWidget {
 							child: Container(
 								decoration: BoxDecoration(
 									gradient: LinearGradient(
-										colors: [cs.primaryContainer, cs.primary.withValues(alpha: 0.8)],
+										colors: [cs.primaryContainer, cs.primary.withOpacity(0.8)],
 										begin: Alignment.topLeft,
 										end: Alignment.bottomRight,
 									),

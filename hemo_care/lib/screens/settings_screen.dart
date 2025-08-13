@@ -1,7 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/theme_provider.dart';
+import '../services/supabase_service.dart';
+import 'profile_edit_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
 	const SettingsScreen({super.key});
@@ -12,6 +16,13 @@ class SettingsScreen extends ConsumerWidget {
 			appBar: AppBar(title: Text('settings'.tr())),
 			body: ListView(
 				children: [
+					ListTile(
+						leading: const Icon(Icons.person_outline),
+						title: Text(tr('full_name')),
+						subtitle: const Text('Profile'),
+						onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileEditScreen())),
+					),
+					const Divider(),
 					ListTile(title: Text('language'.tr())),
 					Padding(
 						padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -31,6 +42,16 @@ class SettingsScreen extends ConsumerWidget {
 							FilterChip(label: Text('system'.tr()), selected: themeMode == ThemeMode.system, onSelected: (_) => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.system)),
 						]),
 					),
+					const Divider(),
+					if (kSupabaseConfigured)
+						ListTile(
+							leading: const Icon(Icons.logout),
+							title: Text(tr('logout')),
+							onTap: () async {
+								await Supabase.instance.client.auth.signOut();
+								if (context.mounted) context.go('/signin');
+							},
+						),
 				],
 			),
 		);

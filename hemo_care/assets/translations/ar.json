@@ -29,5 +29,7 @@
   "onboarding_title": "رفيقك في رعاية الهيموفيليا",
   "onboarding_desc": "تعلّم الخطوات، وتتبع النزيف، وتواصل مع طبيبك.",
   "get_started": "ابدأ الآن",
-  "choose_role_signup": "اختر دورك"
+  "choose_role_signup": "اختر دورك",
+  "full_name": "الاسم الكامل",
+  "save": "حفظ"
 }

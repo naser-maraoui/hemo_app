@@ -29,5 +29,7 @@
   "onboarding_title": "Votre compagnon de soins pour l'hémophilie",
   "onboarding_desc": "Apprenez les étapes, suivez les épisodes et échangez avec votre clinicien.",
   "get_started": "Commencer",
-  "choose_role_signup": "Choisissez votre rôle"
+  "choose_role_signup": "Choisissez votre rôle",
+  "full_name": "Nom complet",
+  "save": "Enregistrer"
 }

@@ -29,5 +29,7 @@
   "onboarding_title": "Your companion for hemophilia care",
   "onboarding_desc": "Learn steps, track episodes, and connect with your clinician.",
   "get_started": "Get started",
-  "choose_role_signup": "Choose your role"
+  "choose_role_signup": "Choose your role",
+  "full_name": "Full name",
+  "save": "Save"
 }

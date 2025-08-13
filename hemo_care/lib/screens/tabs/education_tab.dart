@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/supabase_service.dart';
 import '../../services/local_store.dart';
+import '../article_detail_screen.dart';
 
 class EducationTab extends StatefulWidget {
 	const EducationTab({super.key});
@@ -50,6 +51,9 @@ class _EducationTabState extends State<EducationTab> {
 							child: ListTile(
 								title: Text(a['title'] ?? ''),
 								subtitle: Text(a['category'] ?? ''),
+								onTap: () => Navigator.of(context).push(MaterialPageRoute(
+									builder: (_) => ArticleDetailScreen(articleId: (a['id'] as num?)?.toInt() ?? 0, title: a['title'] ?? ''),
+								)),
 							),
 						);
 					},
