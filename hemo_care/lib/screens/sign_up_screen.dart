@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_service.dart';
 import '../widgets/offline_banner.dart';
+import 'patient_info_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
 	const SignUpScreen({super.key});
@@ -38,7 +39,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 				});
 			}
 			if (!mounted) return;
-			context.go('/signin');
+			if (selectedRole == 'patient') {
+				Navigator.of(context).pushReplacement(
+					MaterialPageRoute(builder: (_) => const PatientInfoScreen()),
+				);
+			} else {
+				context.go('/signin');
+			}
 		} catch (e) {
 			setState(() { error = e.toString(); });
 		} finally {
