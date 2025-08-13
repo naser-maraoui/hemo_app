@@ -25,7 +25,19 @@ class _SignInScreenState extends State<SignInScreen> {
 			}
 			await Supabase.instance.client.auth.signInWithPassword(email: email.text.trim(), password: password.text.trim());
 			if (!mounted) return;
-			context.go('/home');
+			final uid = Supabase.instance.client.auth.currentUser?.id;
+			if (uid != null) {
+				final profile = await Supabase.instance.client.from('profiles').select('role').eq('user_id', uid).maybeSingle();
+				final String role = (profile?['role'] as String?) ?? 'patient';
+				if (!mounted) return;
+				if (role == 'admin') {
+					context.go('/admin');
+				} else {
+					context.go('/shell');
+				}
+			} else {
+				context.go('/shell');
+			}
 		} catch (e) {
 			setState(() { error = e.toString(); });
 		} finally {

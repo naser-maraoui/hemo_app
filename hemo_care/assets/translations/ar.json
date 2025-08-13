@@ -23,5 +23,11 @@
   "dashboard": "لوحة التحكم",
   "welcome_message": "مرحبًا",
   "offline": "أنت غير متصل",
-  "online": "عاد الاتصال"
+  "online": "عاد الاتصال",
+  "education": "التثقيف",
+  "chat": "الدردشة",
+  "onboarding_title": "رفيقك في رعاية الهيموفيليا",
+  "onboarding_desc": "تعلّم الخطوات، وتتبع النزيف، وتواصل مع طبيبك.",
+  "get_started": "ابدأ الآن",
+  "choose_role_signup": "اختر دورك"
 }

@@ -13,6 +13,8 @@ import 'screens/patient_home_screen.dart';
 import 'screens/doctor_home_screen.dart';
 import 'screens/admin_home_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/shell_screen.dart';
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
@@ -49,31 +51,44 @@ ThemeMode _readSavedThemeMode(SharedPreferences prefs) {
 class _AppBootstrap extends ConsumerWidget {
 	const _AppBootstrap({super.key});
 
+	Future<String> _initialLocation() async {
+		final prefs = await SharedPreferences.getInstance();
+		final seen = prefs.getBool('seen_onboarding') ?? false;
+		return seen ? '/signin' : '/onboarding';
+	}
+
 	@override
 	Widget build(BuildContext context, WidgetRef ref) {
 		final ThemeMode themeMode = ref.watch(themeModeProvider);
-		final router = _buildRouter();
-		return MaterialApp.router(
-			title: 'Hemophilia Care',
-			debugShowCheckedModeBanner: false,
-			locale: context.locale,
-			supportedLocales: context.supportedLocales,
-			localizationsDelegates: context.localizationDelegates,
-			themeMode: themeMode,
-			theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue), useMaterial3: true),
-			darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark), useMaterial3: true),
-			routerConfig: router,
+		return FutureBuilder<String>(
+			future: _initialLocation(),
+			builder: (context, snap) {
+				final router = _buildRouter(initial: snap.data ?? '/onboarding');
+				return MaterialApp.router(
+					title: 'Hemophilia Care',
+					debugShowCheckedModeBanner: false,
+					locale: context.locale,
+					supportedLocales: context.supportedLocales,
+					localizationsDelegates: context.localizationDelegates,
+					themeMode: themeMode,
+					theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue), useMaterial3: true),
+					darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark), useMaterial3: true),
+					routerConfig: router,
+				);
+			},
 		);
 	}
 }
 
-GoRouter _buildRouter() {
+GoRouter _buildRouter({required String initial}) {
 	return GoRouter(
-		initialLocation: '/home',
+		initialLocation: initial,
 		routes: [
+			GoRoute(path: '/onboarding', builder: (ctx, st) => const OnboardingScreen()),
 			GoRoute(path: '/signin', builder: (ctx, st) => const SignInScreen()),
 			GoRoute(path: '/signup', builder: (ctx, st) => const SignUpScreen()),
 			GoRoute(path: '/home', builder: (ctx, st) => const HomeScreen()),
+			GoRoute(path: '/shell', builder: (ctx, st) => const ShellScreen()),
 			GoRoute(path: '/patient', builder: (ctx, st) => const PatientHomeScreen()),
 			GoRoute(path: '/doctor', builder: (ctx, st) => const DoctorHomeScreen()),
 			GoRoute(path: '/admin', builder: (ctx, st) => const AdminHomeScreen()),

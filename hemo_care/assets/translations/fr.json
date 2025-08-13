@@ -23,5 +23,11 @@
   "dashboard": "Tableau de bord",
   "welcome_message": "Bienvenue",
   "offline": "Vous êtes hors ligne",
-  "online": "De retour en ligne"
+  "online": "De retour en ligne",
+  "education": "Éducation",
+  "chat": "Chat",
+  "onboarding_title": "Votre compagnon de soins pour l'hémophilie",
+  "onboarding_desc": "Apprenez les étapes, suivez les épisodes et échangez avec votre clinicien.",
+  "get_started": "Commencer",
+  "choose_role_signup": "Choisissez votre rôle"
 }

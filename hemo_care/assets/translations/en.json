@@ -23,5 +23,11 @@
   "dashboard": "Dashboard",
   "welcome_message": "Welcome",
   "offline": "You are offline",
-  "online": "Back online"
+  "online": "Back online",
+  "education": "Education",
+  "chat": "Chat",
+  "onboarding_title": "Your companion for hemophilia care",
+  "onboarding_desc": "Learn steps, track episodes, and connect with your clinician.",
+  "get_started": "Get started",
+  "choose_role_signup": "Choose your role"
 }
