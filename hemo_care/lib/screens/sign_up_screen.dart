@@ -15,6 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 	final TextEditingController email = TextEditingController();
 	final TextEditingController password = TextEditingController();
 	final TextEditingController confirm = TextEditingController();
+	String selectedRole = 'patient';
 	bool loading = false;
 	String? error;
 
@@ -33,7 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 			if (user != null) {
 				await Supabase.instance.client.from('profiles').upsert({
 					'user_id': user.id,
-					'role': 'patient',
+					'role': selectedRole,
 				});
 			}
 			if (!mounted) return;
@@ -47,24 +48,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 	@override
 	Widget build(BuildContext context) {
+		final cs = Theme.of(context).colorScheme;
 		return Scaffold(
-			appBar: AppBar(title: Text('sign_up'.tr())),
-			body: Column(children: [
-				const OfflineBanner(),
-				Padding(
-					padding: const EdgeInsets.all(16),
+			body: Container(
+				decoration: BoxDecoration(
+					gradient: LinearGradient(
+						colors: [cs.surfaceContainerHighest, cs.primary.withOpacity(0.08)],
+						begin: Alignment.topLeft,
+						end: Alignment.bottomRight,
+					),
+				),
+				child: SafeArea(
 					child: Column(children: [
-						TextField(controller: email, decoration: InputDecoration(labelText: 'email'.tr())),
-						TextField(controller: password, decoration: InputDecoration(labelText: 'password'.tr()), obscureText: true),
-						TextField(controller: confirm, decoration: InputDecoration(labelText: 'confirm_password'.tr()), obscureText: true),
-						const SizedBox(height: 12),
-						if (error != null) Text(error!, style: const TextStyle(color: Colors.red)),
-						Row(children: [
-							Expanded(child: ElevatedButton(onPressed: loading ? null : _submit, child: loading ? const CircularProgressIndicator() : Text('sign_up'.tr()))),
-						]),
+						const OfflineBanner(),
+						Expanded(
+							child: Center(
+								child: ConstrainedBox(
+									constraints: const BoxConstraints(maxWidth: 480),
+									child: Card(
+										margin: const EdgeInsets.all(16),
+										shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+										child: Padding(
+											padding: const EdgeInsets.all(20),
+											child: Column(
+												mainAxisSize: MainAxisSize.min,
+												crossAxisAlignment: CrossAxisAlignment.stretch,
+												children: [
+													Text('sign_up'.tr(), style: Theme.of(context).textTheme.headlineSmall),
+													const SizedBox(height: 8),
+													Text('choose_role_signup'.tr(), style: Theme.of(context).textTheme.labelLarge),
+													const SizedBox(height: 8),
+													Wrap(spacing: 8, children: [
+														ChoiceChip(label: Text('patient'.tr()), selected: selectedRole == 'patient', onSelected: (_) => setState(() => selectedRole = 'patient')),
+														ChoiceChip(label: Text('doctor'.tr()), selected: selectedRole == 'doctor', onSelected: (_) => setState(() => selectedRole = 'doctor')),
+													]),
+													const SizedBox(height: 16),
+													TextField(controller: email, keyboardType: TextInputType.emailAddress, decoration: InputDecoration(prefixIcon: const Icon(Icons.email_outlined), labelText: 'email'.tr())),
+													const SizedBox(height: 12),
+													TextField(controller: password, decoration: InputDecoration(prefixIcon: const Icon(Icons.lock_outline), labelText: 'password'.tr()), obscureText: true),
+													const SizedBox(height: 12),
+													TextField(controller: confirm, decoration: InputDecoration(prefixIcon: const Icon(Icons.lock_reset), labelText: 'confirm_password'.tr()), obscureText: true),
+													const SizedBox(height: 12),
+													if (error != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(error!, style: const TextStyle(color: Colors.red))),
+													FilledButton(
+														onPressed: loading ? null : _submit,
+														child: loading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : Text('sign_up'.tr()),
+													),
+													TextButton(onPressed: () => context.go('/signin'), child: Text('sign_in'.tr())),
+												],
+											),
+										),
+									),
+								),
+							),
+						),
 					]),
 				),
-			]),
+			),
 		);
 	}
 }
