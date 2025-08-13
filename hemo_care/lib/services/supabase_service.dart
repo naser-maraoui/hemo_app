@@ -1,11 +1,14 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'local_store.dart';
+import '../secrets.dart' as secrets;
 
 bool kSupabaseConfigured = false;
 
 Future<void> initSupabaseFromEnv() async {
-	final String url = const String.fromEnvironment('SUPABASE_URL');
-	final String anonKey = const String.fromEnvironment('SUPABASE_ANON_KEY');
+	final String flagUrl = const String.fromEnvironment('SUPABASE_URL');
+	final String flagAnonKey = const String.fromEnvironment('SUPABASE_ANON_KEY');
+	final String url = flagUrl.isNotEmpty ? flagUrl : (secrets.SUPABASE_URL);
+	final String anonKey = flagAnonKey.isNotEmpty ? flagAnonKey : (secrets.SUPABASE_ANON_KEY);
 	if (url.isNotEmpty && anonKey.isNotEmpty) {
 		await Supabase.initialize(url: url, anonKey: anonKey);
 		kSupabaseConfigured = true;
