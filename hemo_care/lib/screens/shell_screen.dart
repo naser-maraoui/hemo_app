@@ -1,5 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'tabs/dashboard_tab.dart';
+import 'tabs/education_tab.dart';
+import 'tabs/chat_tab.dart';
+import 'settings_screen.dart';
 
 class ShellScreen extends StatefulWidget {
 	const ShellScreen({super.key});
@@ -13,10 +17,10 @@ class _ShellScreenState extends State<ShellScreen> {
 	@override
 	Widget build(BuildContext context) {
 		final List<Widget> pages = [
-			const _DashboardTab(),
-			const _EducationTab(),
-			const _ChatTab(),
-			const _SettingsTab(),
+			const DashboardTab(),
+			const EducationTab(),
+			const ChatTab(),
+			const SettingsScreen(),
 		];
 		return Scaffold(
 			body: AnimatedSwitcher(
@@ -34,37 +38,5 @@ class _ShellScreenState extends State<ShellScreen> {
 				],
 			),
 		);
-	}
-}
-
-class _DashboardTab extends StatelessWidget {
-	const _DashboardTab();
-	@override
-	Widget build(BuildContext context) {
-		return Center(child: Text('dashboard'.tr()));
-	}
-}
-
-class _EducationTab extends StatelessWidget {
-	const _EducationTab();
-	@override
-	Widget build(BuildContext context) {
-		return Center(child: Text('education'.tr()));
-	}
-}
-
-class _ChatTab extends StatelessWidget {
-	const _ChatTab();
-	@override
-	Widget build(BuildContext context) {
-		return Center(child: Text('chat'.tr()));
-	}
-}
-
-class _SettingsTab extends StatelessWidget {
-	const _SettingsTab();
-	@override
-	Widget build(BuildContext context) {
-		return const SizedBox.shrink();
 	}
 }

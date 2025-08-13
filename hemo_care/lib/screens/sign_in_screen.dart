@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_service.dart';
+import '../services/local_store.dart';
 import '../widgets/offline_banner.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -17,6 +18,12 @@ class _SignInScreenState extends State<SignInScreen> {
 	bool loading = false;
 	String? error;
 
+	@override
+	void initState() {
+		super.initState();
+		LocalStore.init();
+	}
+
 	Future<void> _submit() async {
 		setState(() { loading = true; error = null; });
 		try {
@@ -25,16 +32,10 @@ class _SignInScreenState extends State<SignInScreen> {
 			}
 			await Supabase.instance.client.auth.signInWithPassword(email: email.text.trim(), password: password.text.trim());
 			if (!mounted) return;
-			final uid = Supabase.instance.client.auth.currentUser?.id;
-			if (uid != null) {
-				final profile = await Supabase.instance.client.from('profiles').select('role').eq('user_id', uid).maybeSingle();
-				final String role = (profile?['role'] as String?) ?? 'patient';
-				if (!mounted) return;
-				if (role == 'admin') {
-					context.go('/admin');
-				} else {
-					context.go('/shell');
-				}
+			final role = await fetchAndCacheUserRole();
+			if (!mounted) return;
+			if (role == 'admin') {
+				context.go('/admin');
 			} else {
 				context.go('/shell');
 			}

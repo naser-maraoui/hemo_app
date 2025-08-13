@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/theme_provider.dart';
 import 'services/supabase_service.dart';
+import 'services/local_store.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/sign_up_screen.dart';
 import 'screens/home_screen.dart';
@@ -19,6 +20,7 @@ import 'screens/shell_screen.dart';
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
 	await EasyLocalization.ensureInitialized();
+	await LocalStore.init();
 	await initSupabaseFromEnv();
 	final SharedPreferences prefs = await SharedPreferences.getInstance();
 	final ThemeMode initialThemeMode = _readSavedThemeMode(prefs);
@@ -54,7 +56,10 @@ class _AppBootstrap extends ConsumerWidget {
 	Future<String> _initialLocation() async {
 		final prefs = await SharedPreferences.getInstance();
 		final seen = prefs.getBool('seen_onboarding') ?? false;
-		return seen ? '/signin' : '/onboarding';
+		if (!seen) return '/onboarding';
+		// If offline and user cached, go to shell
+		if (!kSupabaseConfigured && LocalStore.getUser() != null) return '/shell';
+		return '/signin';
 	}
 
 	@override
