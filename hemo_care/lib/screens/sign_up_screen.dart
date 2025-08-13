@@ -15,7 +15,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 	final TextEditingController email = TextEditingController();
 	final TextEditingController password = TextEditingController();
 	final TextEditingController confirm = TextEditingController();
-	String selectedRole = 'patient';
 	bool loading = false;
 	String? error;
 
@@ -34,11 +33,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 			if (user != null) {
 				await Supabase.instance.client.from('profiles').upsert({
 					'user_id': user.id,
-					'role': selectedRole,
+					'role': 'patient',
 				});
 			}
 			if (!mounted) return;
-			context.go('/home');
+			context.go('/signin');
 		} catch (e) {
 			setState(() { error = e.toString(); });
 		} finally {
@@ -54,14 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 				const OfflineBanner(),
 				Padding(
 					padding: const EdgeInsets.all(16),
-					child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-						Text('choose_role_signup'.tr()),
-						const SizedBox(height: 8),
-						Wrap(spacing: 8, children: [
-							ChoiceChip(label: Text('patient'.tr()), selected: selectedRole == 'patient', onSelected: (_) => setState(() => selectedRole = 'patient')),
-							ChoiceChip(label: Text('doctor'.tr()), selected: selectedRole == 'doctor', onSelected: (_) => setState(() => selectedRole = 'doctor')),
-						]),
-						const Divider(height: 24),
+					child: Column(children: [
 						TextField(controller: email, decoration: InputDecoration(labelText: 'email'.tr())),
 						TextField(controller: password, decoration: InputDecoration(labelText: 'password'.tr()), obscureText: true),
 						TextField(controller: confirm, decoration: InputDecoration(labelText: 'confirm_password'.tr()), obscureText: true),

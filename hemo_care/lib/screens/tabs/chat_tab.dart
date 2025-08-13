@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/supabase_service.dart';
 import '../../services/local_store.dart';
+import '../../services/chat_service.dart';
 
 class ChatTab extends StatefulWidget {
 	const ChatTab({super.key});
@@ -12,32 +13,51 @@ class ChatTab extends StatefulWidget {
 
 class _ChatTabState extends State<ChatTab> {
 	final TextEditingController text = TextEditingController();
-	final int channelId = 1;
+	int? channelId;
+	String? error;
+
+	@override
+	void initState() {
+		super.initState();
+		_init();
+	}
+
+	Future<void> _init() async {
+		final id = await ChatService.ensureGeneralChannel();
+		if (mounted) setState(() => channelId = id);
+	}
 
 	@override
 	Widget build(BuildContext context) {
+		final int? id = channelId ?? LocalStore.getGeneralChannelId();
 		return Scaffold(
 			appBar: AppBar(title: Text('chat'.tr())),
 			body: Column(children: [
-				Expanded(child: kSupabaseConfigured ? _OnlineMessages(channelId: channelId) : _OfflineMessages(channelId: channelId)),
+				if (error != null) Container(color: Colors.red[100], padding: const EdgeInsets.all(8), child: Text(error!, style: const TextStyle(color: Colors.red))),
+				Expanded(child: id == null ? const Center(child: CircularProgressIndicator()) : (kSupabaseConfigured ? _OnlineMessages(channelId: id) : _OfflineMessages(channelId: id))),
 				Row(
 					children: [
 						Expanded(child: TextField(controller: text, decoration: InputDecoration(hintText: tr('chat')))),
-						IconButton(onPressed: _send, icon: const Icon(Icons.send))
+						IconButton(onPressed: () => _send(id), icon: const Icon(Icons.send))
 					],
 				),
 			]),
 		);
 	}
 
-	Future<void> _send() async {
+	Future<void> _send(int? id) async {
 		final body = text.text.trim();
-		if (body.isEmpty) return;
+		if (body.isEmpty || id == null) return;
 		if (!kSupabaseConfigured) return;
 		final uid = Supabase.instance.client.auth.currentUser?.id;
 		if (uid == null) return;
-		await Supabase.instance.client.from('messages').insert({'channel_id': channelId, 'sender_id': uid, 'body': body});
-		text.clear();
+		try {
+			await Supabase.instance.client.from('messages').insert({'channel_id': id, 'sender_id': uid, 'body': body});
+			text.clear();
+			setState(() => error = null);
+		} catch (e) {
+			setState(() => error = e.toString());
+		}
 	}
 }
 
