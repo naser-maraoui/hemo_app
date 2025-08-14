@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_service.dart';
+import '../services/storage_service.dart';
 
 class PatientInfoScreen extends StatefulWidget {
 	const PatientInfoScreen({super.key});
@@ -17,6 +20,14 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
 	String severity = 'mild';
 	bool saving = false;
 	String? error;
+	File? avatarFile;
+	String? avatarUrl;
+
+	Future<void> _pickAvatar() async {
+		final ImagePicker picker = ImagePicker();
+		final XFile? x = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1024);
+		if (x != null) setState(() => avatarFile = File(x.path));
+	}
 
 	Future<void> _pickDate() async {
 		final now = DateTime.now();
@@ -37,12 +48,16 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
 			}
 			final uid = Supabase.instance.client.auth.currentUser?.id;
 			if (uid == null) throw Exception('Not signed in');
+			if (avatarFile != null) {
+				avatarUrl = await StorageService.uploadAvatar(uid, avatarFile!);
+			}
 			await Supabase.instance.client.from('profiles').update({
 				'full_name': fullName.text.trim(),
 				'birthdate': birthdate?.toIso8601String(),
 				'hemophilia_type': hemoType,
 				'severity': severity,
 				'weight_kg': weight.text.isEmpty ? null : double.tryParse(weight.text),
+				'avatar_url': avatarUrl,
 			}).eq('user_id', uid);
 			if (!mounted) return;
 			Navigator.of(context).pop();
@@ -79,6 +94,17 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
 										crossAxisAlignment: CrossAxisAlignment.stretch,
 										children: [
 											Text('Complete your profile', style: Theme.of(context).textTheme.titleLarge),
+											const SizedBox(height: 12),
+											Center(
+												child: Stack(children: [
+													CircleAvatar(radius: 44, backgroundImage: avatarFile != null ? FileImage(avatarFile!) : null, child: avatarFile == null ? const Icon(Icons.person, size: 44) : null),
+													Positioned(
+														right: 0,
+														bottom: 0,
+														child: IconButton(onPressed: _pickAvatar, icon: const Icon(Icons.camera_alt))
+													),
+												]),
+											),
 											const SizedBox(height: 12),
 											TextField(controller: fullName, decoration: InputDecoration(prefixIcon: const Icon(Icons.person_outline), labelText: tr('full_name'))),
 											const SizedBox(height: 12),
